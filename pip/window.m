@@ -219,7 +219,12 @@ static CGImageRef CaptureWindow(CGWindowID wid, bool hidpi){
     | (hidpi ? 0 : kCGSWindowCaptureNominalResolution)
   );
   if(window_image_arr) window_image = (CGImageRef)CFArrayGetValueAtIndex(window_image_arr, 0);
-  if(!window_image) window_image = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, wid, kCGWindowImageNominalResolution | kCGWindowImageBoundsIgnoreFraming);
+  if(!window_image) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    window_image = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, wid, kCGWindowImageNominalResolution | kCGWindowImageBoundsIgnoreFraming);
+#pragma clang diagnostic pop
+  }
   return window_image;
 }
 
@@ -822,7 +827,10 @@ static NSImage* get_rel_image(NSImage* img){
 }
 
 - (void)capture{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CGImageRef window_image = window_id >= 0 ? CaptureWindow(window_id, is_hidpi) : (display_id >= 0 ? CGDisplayCreateImage(display_id) : NULL);
+#pragma clang diagnostic pop
   if(window_image != NULL){
     CIImage* ciimage = [CIImage imageWithCGImage:window_image];
     CGRect imageRect = [ciimage extent];
@@ -1083,7 +1091,10 @@ end:
 
 -(void)stopDisplayStream{
   if(!display_stream) return;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CGDisplayStreamStop(display_stream);
+#pragma clang diagnostic pop
   CFRelease(display_stream);
   display_stream = NULL;
 }
@@ -1109,6 +1120,8 @@ end:
     size_t height = CGDisplayPixelsHigh(display_id);
     if(is_hidpi) width *= self.backingScaleFactor, height *= self.backingScaleFactor;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSDictionary* opts = @{
       (__bridge NSString *)kCGDisplayStreamMinimumFrameTime : @(1.0f / refreshRate),
       (__bridge NSString *)kCGDisplayStreamShowCursor : [(NSNumber*)getPref(@"mouse_capture") intValue] > 0 ? @YES : @NO,
@@ -1119,6 +1132,7 @@ end:
       [self->imageView setImage:[CIImage imageWithIOSurface:frameSurface]];
     });
     CGDisplayStreamStart(display_stream);
+#pragma clang diagnostic pop
 
     is_playing = true;
     [self resetPlaybackSate];

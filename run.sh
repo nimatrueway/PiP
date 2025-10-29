@@ -35,7 +35,7 @@ run_inline(){
   echo "cmake not found, building inline without airplay"
   mkdir -p $BUILD_PATH
   APP=$BUILD_PATH/$1
-  clang $MAKE_ARGS -DNO_AIRPLAY -Wl,-dead_strip pip/*.m -o $APP -fobjc-arc -fobjc-link-runtime -O3 -g0 -Wno-deprecated-declarations -F /System/Library/PrivateFrameworks \
+  clang $MAKE_ARGS -DNO_AIRPLAY -Wl,-dead_strip pip/*.m -o $APP -fobjc-arc -fobjc-link-runtime -O3 -g0 -Wno-deprecated-declarations -Wno-unguarded-availability-new -mmacosx-version-min=10.13 -F /System/Library/PrivateFrameworks \
     -framework Cocoa -framework VideoToolbox -framework AudioToolbox -framework CoreMedia -framework QuartzCore -framework OpenGL -framework Metal -framework MetalKit -framework PIP -framework SkyLight
   printSize $1;
   $APP $@
