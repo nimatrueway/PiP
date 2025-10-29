@@ -32,6 +32,7 @@ item.keyEquivalentModifierMask = mask; \
   NSApplication* app;
   NSMenuItem* windowMenuItem;
   boolean_t clickThroughState;
+  boolean_t secretiveState;
 }
 @end
 
@@ -40,6 +41,7 @@ item.keyEquivalentModifierMask = mask; \
   self = [super init];
   app = application;
   clickThroughState = false;
+  secretiveState = true;
 
   NSMenu* menu;
   NSMenu* menubar = [[NSMenu alloc] init];
@@ -56,6 +58,7 @@ item.keyEquivalentModifierMask = mask; \
   INIT_MENU(@"File");
   ADD_ITEM(@"New", newWindow, @"n");
   ADD_ITEM(@"Click Through", clickThrough:, @"c");
+  ADD_ITEM(@"Secretive (Hide from Screen Share)", toggleSecretive:, @"s");
   ADD_ITEM(@"Close", performClose:, @"w");
 
   INIT_MENU(@"Window");
@@ -109,6 +112,7 @@ item.keyEquivalentModifierMask = mask; \
   NSWindow* window = [[Window alloc] initWithAirplay: false andTitle:nil];
   [window makeKeyAndOrderFront:self];
   [window setIgnoresMouseEvents:clickThroughState];
+  [window setSharingType:secretiveState ? NSWindowSharingNone : NSWindowSharingReadOnly];
   return window;
 }
 
@@ -122,6 +126,15 @@ item.keyEquivalentModifierMask = mask; \
   [item setState:clickThroughState];
   for(NSWindow* window in [app windows]){
     if([window isKindOfClass:[Window class]]) [window setIgnoresMouseEvents:clickThroughState];
+  }
+}
+
+-(void) toggleSecretive:(id)sender{
+  NSMenuItem* item = (NSMenuItem*)sender;
+  secretiveState = !item.state;
+  [item setState:secretiveState];
+  for(NSWindow* window in [app windows]){
+    if([window isKindOfClass:[Window class]]) [window setSharingType:secretiveState ? NSWindowSharingNone : NSWindowSharingReadOnly];
   }
 }
 
