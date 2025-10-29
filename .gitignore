@@ -21,6 +21,7 @@ xcuserdata/
 
 ## Other
 *.moved-aside
+.idea
 *.xccheckout
 *.xcscmblueprint
 
