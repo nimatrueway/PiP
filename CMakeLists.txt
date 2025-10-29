@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(PiP)
 
-add_compile_options(-fobjc-arc -Wno-deprecated-declarations -Wno-format)
+add_compile_options(-fobjc-arc -Wno-deprecated-declarations -Wno-unguarded-availability-new -Wno-format -mmacosx-version-min=10.13)
 
 set(frameworks Cocoa VideoToolbox AudioToolbox CoreMedia QuartzCore OpenGL Metal MetalKit PIP SkyLight)
 list(TRANSFORM frameworks PREPEND "-framework ")

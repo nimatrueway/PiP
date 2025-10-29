@@ -11,6 +11,7 @@
 #import "window.h"
 #import "audioPlayer.h"
 #import "H264Decoder.h"
+#import <CoreImage/CIFilter.h>
 
 #define INCBIN_SILENCE_BITCODE_WARNING
 #include "incbin.h"

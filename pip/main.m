@@ -41,7 +41,7 @@ item.keyEquivalentModifierMask = mask; \
   self = [super init];
   app = application;
   clickThroughState = false;
-  secretiveState = true;
+  secretiveState = false;
 
   NSMenu* menu;
   NSMenu* menubar = [[NSMenu alloc] init];
@@ -58,7 +58,7 @@ item.keyEquivalentModifierMask = mask; \
   INIT_MENU(@"File");
   ADD_ITEM(@"New", newWindow, @"n");
   ADD_ITEM(@"Click Through", clickThrough:, @"c");
-  ADD_ITEM(@"Secretive (Hide from Screen Share)", toggleSecretive:, @"s");
+  ADD_ITEM(@"Stealth Mode", toggleSecretive:, @"s");
   ADD_ITEM(@"Close", performClose:, @"w");
 
   INIT_MENU(@"Window");
@@ -133,13 +133,19 @@ item.keyEquivalentModifierMask = mask; \
   NSMenuItem* item = (NSMenuItem*)sender;
   secretiveState = !item.state;
   [item setState:secretiveState];
+  
+  // Update window sharing type
   for(NSWindow* window in [app windows]){
     if([window isKindOfClass:[Window class]]) [window setSharingType:secretiveState ? NSWindowSharingNone : NSWindowSharingReadOnly];
   }
+  
+  // Update dock icon visibility
+  [app setActivationPolicy:secretiveState ? NSApplicationActivationPolicyAccessory : NSApplicationActivationPolicyRegular];
 }
 
 -(void)applicationDidFinishLaunching:(NSNotification *)notification{
-  [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+  // Set activation policy based on stealth mode (secretiveState starts as false)
+  [app setActivationPolicy:secretiveState ? NSApplicationActivationPolicyAccessory : NSApplicationActivationPolicyRegular];
   [app activateIgnoringOtherApps:YES];
   [self newWindow];
 //  [self showPreferencePanel:self];
